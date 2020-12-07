@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useEffect, useState} from 'react';
+import axios from 'axios';
+import {Route, Switch, Link} from 'react-router-dom';
+import PokeDetails from './components/PokeDetails';
+import ErrorPage from './components/ErrorPage';
 
-function App() {
+
+export default function App() {
+
+  let [pokemons,setList] = useState([]);
+
+  // How we useEffect as ComponentDidMount by having an initial value of [] (in line 17)
+  useEffect(()=>{
+    axios.get('https://pokeapi.co/api/v2/pokemon?limit=151')
+      .then((res)=>{
+        setList(pokemons=res.data.results)
+      })
+  }, [])
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{display:'flex'}}>
+      <div>
+        {
+          pokemons.map ((pokemon,index)=>{
+            return <Link to={`/pokemons/${index+1}`}><p>{pokemon.name}</p></Link>
+          })
+        }
+      </div>
+      <Switch>
+        <Route path="/pokemons/:id" component={PokeDetails} />
+        <Route path="*" component={ErrorPage} />
+      </Switch>
+      
     </div>
-  );
+  )
 }
-
-export default App;
